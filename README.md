@@ -1,4 +1,4 @@
-# Two-Way ANOVA: Living Conditions, Residential Area, and PHQ-9
+# Factorial Analysis of Living Conditions and PHQ-9 Scores
 
 An R analysis examining the association between living conditions, area of residence, and PHQ-9 depression scores. The script combines descriptive analysis, assumption checks, factorial and follow-up ANOVA models, post-hoc comparisons, and non-parametric alternatives.
 
@@ -40,7 +40,7 @@ install.packages(c(
 
 ## Run
 
-Open `ANOVA_2021_3.R` in RStudio or another R environment, install the dependencies, and execute the script. Select the input workbook when prompted.
+Open `factorial_anova_phq9.R` in RStudio or another R environment, install the dependencies, and execute the script. Select the input workbook when prompted.
 
 ## Outputs
 
