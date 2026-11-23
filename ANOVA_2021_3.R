@@ -84,8 +84,9 @@ ggsave('image2.png',gg_line, width=4, height = 3,units = "in")
 ##For one-way ANOVA
 leveneTest(PHQ ~  living_factor, data = my_data)
 
-##For two-way ANOVA
-leveneTest(PHQ ~  area_factor, data = my_data)
+## For the factorial model: assess variance homogeneity across the
+## living-condition by residential-area cells.
+leveneTest(PHQ ~ interaction(living_factor, area_factor), data = my_data)
 
 ###Normality
 shapiro.test(my_data$PHQ9)
@@ -135,20 +136,21 @@ kruskal.test(PHQ ~ living_factor, data = my_data)
 #Post-hoc
 dunn_test(my_data, PHQ9 ~ LivingWith)
 
-###Remove outlier
-data_out_rm <- my_data[!my_data %in% boxplot.stats(PHQ9)$out]
-length(my_data) - length(data_out_rm) ###count the difference
-#boxplot(data_out_rm) # Create boxplot without outliers
+### Exploratory outlier filtering: retain complete rows based on PHQ-9 values.
+phq9_outliers <- boxplot.stats(my_data$PHQ9)$out
+data_out_rm <- my_data[!(my_data$PHQ9 %in% phq9_outliers), , drop = FALSE]
+length(my_data$PHQ9) - length(data_out_rm$PHQ9) # Number of removed observations
 
+# Calculate IQR bounds and retain observations within the conventional 1.5*IQR range.
+Q1 <- quantile(my_data$PHQ9, 0.25, na.rm = TRUE)
+Q3 <- quantile(my_data$PHQ9, 0.75, na.rm = TRUE)
+iqr_phq9 <- IQR(my_data$PHQ9, na.rm = TRUE)
 
-#find Q1, Q3, and interquartile range for values in column PHQ9
-Q1 <- quantile(PHQ9, .25)
-Q3 <- quantile(PHQ9, .75)
-IQR <- IQR(PHQ9)
-
-#only keep rows in dataframe that have values within 1.5*IQR of Q1 and Q3
-no_outliers <- subset(my_data, PHQ9> (Q1 - 1.5*IQR) 
-                      & PHQ< (Q3 + 1.5*IQR))
+no_outliers <- subset(
+  my_data,
+  PHQ9 >= (Q1 - 1.5 * iqr_phq9) &
+    PHQ9 <= (Q3 + 1.5 * iqr_phq9)
+)
 
 #view row and column count of new data frame
 dim(no_outliers) 
